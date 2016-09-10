@@ -1,1 +1,0 @@
-/home/pi/bin/ssd1306_info.py
