@@ -1,0 +1,47 @@
+#!/bin/sh -e
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will "exit 0" on success or any other
+# value on error.
+#
+# In order to enable or disable this script just change the execution
+# bits.
+#
+# By default this script does nothing.
+#
+# This Program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3, or (at your option)
+# any later version.
+#
+# This Program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Moode; see the file COPYING.  If not, see
+# <http://www.gnu.org/licenses/>.
+#
+# Moode Audio Player (c) 2014 Tim Curtis
+# http://moodeaudio.org
+#
+# 2016-06-07 2.6 TC moodeOS 1.0
+# 2016-08-28 2.7 TC move watchdog to worker.php
+#
+/usr/bin/udisks-glue > /dev/null 2>&1
+/var/www/command/worker.php > /dev/null 2>&1
+
+if test -x /home/pi/bin/tda7439; then
+	/home/pi/bin/tda7439 > /dev/null 2>&1
+fi
+if test -x /home/pi/bin/led.py; then
+	/home/pi/bin/led.py green
+fi
+if test -x /home/pi/bin/ssd1306_disp.py; then
+	/home/pi/bin/ssd1306_disp.py clock > /dev/null 2>&1 &
+fi
+
+exit 0

@@ -1,0 +1,520 @@
+#
+# double key mode 진입
+#
+begin
+  prog = irexec
+  button = key_function
+  config = /home/pi/bin/led.py white addblink
+end
+
+begin
+  prog = irexec
+  button = key_display
+  config = /home/pi/bin/led.py white addblink;
+end
+
+#
+# function double key 모드
+#
+begin
+  prog = irexec
+  button = key_function
+  button = key_sleep
+  config = /home/pi/bin/led.py red addblink; sync; shutdown -h now
+  flags = quit
+end
+begin
+  prog = irexec
+  button = key_function
+  button = key_power
+  config = /home/pi/bin/led.py red addblink; sync; reboot;
+  flags = quit
+end
+begin
+  prog = irexec
+  button = key_function
+  button = key_volumeup
+  config = /home/pi/bin/led.py blue addblink; /home/pi/bin/volume.py normal-h
+  flags = quit
+end
+begin
+  prog = irexec
+  button = key_function
+  button = key_volumedown
+  config = /home/pi/bin/led.py blue addblink; /home/pi/bin/volume.py normal-l
+  flags = quit
+end
+begin
+  prog = irexec
+  button = key_function
+  button = key_mute
+  config = /home/pi/bin/led.py black
+  config = /home/pi/bin/led.py green
+  flags = quit
+end
+begin
+  prog = irexec
+  button = key_function
+  button = key_function
+  button = key_folderup
+  config = /home/pi/bin/led.py blue addblink; /home/pi/bin/tda7439 mid-range up
+  flags = quit
+end
+begin
+  prog = irexec
+  button = key_function
+  button = key_function
+  button = key_folderdown
+  config = /home/pi/bin/led.py blue addblink; /home/pi/bin/tda7439 mid-range down
+  flags = quit
+end
+begin
+  prog = irexec
+  button = key_function
+  button = key_folderup
+  config = /home/pi/bin/led.py blue addblink; /home/pi/bin/tda7439 treble up
+  flags = quit
+end
+begin
+  prog = irexec
+  button = key_function
+  button = key_folderdown
+  config = /home/pi/bin/led.py blue addblink; /home/pi/bin/tda7439 treble down
+  flags = quit
+end
+begin
+  prog = irexec
+  button = key_function
+  button = key_enter
+  config = /home/pi/bin/led.py blue addblink; ifdown wlan0; ifup wlan0;
+  flags = quit
+end
+
+#
+# display double key 모드
+#
+begin
+  prog = irexec
+  button = key_display
+  button = key_display
+  config = /home/pi/bin/led.py blue addblink; killall ssd1306_disp.py; /home/pi/bin/ssd1306_disp.py > /dev/null 2>&1 &
+  flags = quit
+end
+begin
+  prog = irexec
+  button = key_display
+  button = key_enter
+  config = /home/pi/bin/led.py blue addblink; /home/pi/bin/ssd1306_disp_mode.py network
+  flags = quit
+end
+begin
+  prog = irexec
+  button = key_display
+  button = key_cd
+  config = /home/pi/bin/led.py blue addblink; /home/pi/bin/ssd1306_disp_mode.py info
+  flags = quit
+end
+begin
+  prog = irexec
+  button = key_display
+  button = key_ipod
+  config = /home/pi/bin/led.py blue addblink; /home/pi/bin/ssd1306_disp_mode.py tda7439
+  flags = quit
+end
+begin
+  prog = irexec
+  button = key_display
+  button = key_fm
+  config = /home/pi/bin/led.py blue addblink; /home/pi/bin/ssd1306_disp_mode.py inet_radio
+  flags = quit
+end
+begin
+  prog = irexec
+  button = key_display
+  button = key_usb
+  config = /home/pi/bin/led.py blue addblink; /home/pi/bin/ssd1306_disp_mode.py usb
+  flags = quit
+end
+
+#
+# cd 모드
+#
+begin cd
+  # play/pause toggle
+  begin
+    prog = irexec
+    button = key_down
+    config = /home/pi/bin/led.py blue addblink; mpc -q toggle
+    flags = quit
+  end
+  # stop
+  begin
+    prog = irexec
+    button = key_stop
+    config = /home/pi/bin/led.py blue addblink; mpc -q stop
+    flags = quit
+  end
+  # prev
+  begin
+    prog = irexec
+    button = key_left
+    config = /home/pi/bin/led.py blue addblink; mpc -q prev &
+    flags = quit
+  end
+  # next
+  begin
+    prog = irexec
+    button = key_right
+    config = /home/pi/bin/led.py blue addblink; mpc -q next &
+    flags = quit
+  end
+  # random
+  begin
+    prog = irexec
+    button = key_random
+    config = /home/pi/bin/led.py blue addblink; mpc -q random
+    flags = quit
+  end
+  # repeat
+  begin
+    prog = irexec
+    button = key_repeat
+    config = /home/pi/bin/led.py blue addblink; mpc -q repeat
+    flags = quit
+  end
+  # seek +
+  begin
+    prog = irexec
+    button = key_channelup
+    config = /home/pi/bin/led.py blue addblink; mpc -q seek +1% &
+    flags = quit
+  end
+  # seek -
+  begin
+    prog = irexec
+    button = key_channeldown
+    config = /home/pi/bin/led.py blue addblink; mpc -q seek -1% &
+    flags = quit
+  end
+  #
+  # playlist 선택
+  #
+  # memory double key 모드
+  begin
+    prog = irexec
+    button = key_memory
+    config = /home/pi/bin/led.py white addblink
+  end
+  begin
+    prog = irexec
+    button = key_memory
+    button = key_memory
+    config = /home/pi/bin/led.py blue addblink; mpc clear; mpc load "My Radio"; /home/pi/bin/ssd1306_disp_mode.py mpd; mpc play; /home/pi/bin/tda7439 sel 1
+    flags = quit
+  end
+  begin
+    prog = irexec
+    button = key_memory
+    button = key_presetdown
+    config = /home/pi/bin/led.py blue addblink; mpc clear; mpc load "My CD Pop 1"; /home/pi/bin/ssd1306_disp_mode.py mpd; mpc play; /home/pi/bin/tda7439 sel 1
+    flags = quit
+  end
+  begin
+    prog = irexec
+    button = key_memory
+    button = key_presetup
+    config = /home/pi/bin/led.py blue addblink; mpc clear; mpc load "My CD Classic 1"; /home/pi/bin/ssd1306_disp_mode.py mpd; mpc play; /home/pi/bin/tda7439 sel 1
+    flags = quit
+  end
+  begin
+    prog = irexec
+    button = key_memory
+    button = key_tuningdown
+    config = /home/pi/bin/led.py blue addblink; mpc clear; mpc load @Rating; /home/pi/bin/ssd1306_disp_mode.py mpd; mpc play; /home/pi/bin/tda7439 sel 1
+    flags = quit
+  end
+  begin
+    prog = irexec
+    button = key_memory
+    button = key_tuningup
+    config = /home/pi/bin/led.py blue addblink; mpc clear; mpc load OST; /home/pi/bin/ssd1306_disp_mode.py mpd; mpc play; /home/pi/bin/tda7439 sel 1
+    flags = quit
+  end
+  begin
+    prog = irexec
+    button = key_memory
+    button = key_clock
+    config = /home/pi/bin/led.py blue addblink; mpc clear; mpc load 클래식; /home/pi/bin/ssd1306_disp_mode.py mpd; mpc play; /home/pi/bin/tda7439 sel 1
+    flags = quit
+  end
+  begin
+    prog = irexec
+    button = key_presetdown
+    config = /home/pi/bin/led.py blue addblink; mpc clear; mpc load @Favorite; mpc play; /home/pi/bin/ssd1306_disp_mode.py mpd; mpc play; /home/pi/bin/tda7439 sel 1
+    flags = quit
+  end
+  begin
+    prog = irexec
+    button = key_presetup
+    config = /home/pi/bin/led.py blue addblink; mpc clear; mpc load @Selected; mpc play; /home/pi/bin/ssd1306_disp_mode.py mpd; mpc play; /home/pi/bin/tda7439 sel 1
+    flags = quit
+  end
+  begin
+    prog = irexec
+    button = key_tuningdown
+    config = /home/pi/bin/led.py blue addblink; mpc clear; mpc load 가요; mpc play; /home/pi/bin/ssd1306_disp_mode.py mpd; mpc play; /home/pi/bin/tda7439 sel 1
+    flags = quit
+  end
+  begin
+    prog = irexec
+    button = key_tuningup
+    config = /home/pi/bin/led.py blue addblink; mpc clear; mpc load 자연음악; mpc play; /home/pi/bin/ssd1306_disp_mode.py mpd; mpc play; /home/pi/bin/tda7439 sel 1
+    flags = quit
+  end
+end cd
+
+#
+# ipod 모드
+#
+begin ipod
+  begin
+    prog = irexec
+    button = key_volumeup
+    config = /home/pi/bin/led.py red addblink; /home/pi/bin/tda7439 gain up 
+    flags = quit
+  end
+  begin
+    prog = irexec
+    button = key_volumedown
+    config = /home/pi/bin/led.py red addblink; /home/pi/bin/tda7439 gain down 
+    flags = quit
+  end
+end ipod
+
+# inet_radio 모드
+#
+begin inet_radio
+  begin
+    prog = irexec
+    button = key_presetup
+    config = /home/pi/bin/led.py blue addblink; /home/pi/bin/inet_radio.py up; /home/pi/bin/ssd1306_disp_mode.py inet_radio
+	flags = quit
+  end
+  begin
+    prog = irexec
+    button = key_right
+    config = /home/pi/bin/led.py blue addblink; /home/pi/bin/inet_radio.py up; /home/pi/bin/ssd1306_disp_mode.py inet_radio
+	flags = quit
+  end
+  begin
+    prog = irexec
+    button = key_presetdown
+    config = /home/pi/bin/led.py blue addblink; /home/pi/bin/inet_radio.py down; /home/pi/bin/ssd1306_disp_mode.py inet_radio
+	flags = quit
+  end
+  begin
+    prog = irexec
+    button = key_left
+    config = /home/pi/bin/led.py blue addblink; /home/pi/bin/inet_radio.py down; /home/pi/bin/ssd1306_disp_mode.py inet_radio
+	flags = quit
+  end
+  begin
+    prog = irexec
+    button = key_tuningup
+    config = /home/pi/bin/led.py blue addblink; /home/pi/bin/inet_radio.py -1; /home/pi/bin/ssd1306_disp_mode.py inet_radio
+	flags = quit
+  end
+  begin
+    prog = irexec
+    button = key_tuningdown
+    config = /home/pi/bin/led.py blue addblink; /home/pi/bin/inet_radio.py 0; /home/pi/bin/ssd1306_disp_mode.py inet_radio
+	flags = quit
+  end
+  begin
+    prog = irexec
+    button = key_stop
+    config = killall mplayer
+	flags = quit
+  end
+  begin
+    prog = irexec
+    button = key_down
+    config = /home/pi/bin/led.py blue addblink; /home/pi/bin/inet_radio.py
+    mode = inet_radio
+    flags = quit
+  end
+end inet_radio
+
+#
+# usb 모드
+#
+begin usb
+  begin
+    prog = irexec
+    button = key_volumeup
+    config = /home/pi/bin/led.py red addblink; /home/pi/bin/tda7439 gain up 
+    flags = quit
+  end
+  begin
+    prog = irexec
+    button = key_volumedown
+    config = /home/pi/bin/led.py red addblink; /home/pi/bin/tda7439 gain down 
+    flags = quit
+  end
+end usb
+
+#
+# CD iPod, FM, USB
+#
+begin
+  prog = irexec
+  button = key_cd
+  config = /home/pi/bin/led.py blue addblink; killall mplayer; /home/pi/bin/ssd1306_disp_mode.py mpd; mpc play; /home/pi/bin/tda7439 sel 1
+  mode = cd
+  flags = quit
+end
+
+begin
+  prog = irexec
+  button = key_ipod
+  config = /home/pi/bin/led.py blue addblink; mpc pause; killall mplayer; /home/pi/bin/tda7439 sel 2; /home/pi/bin/ssd1306_disp_mode.py tda7439
+  mode = ipod
+  flags = quit
+end
+
+begin
+  prog = irexec
+  button = key_fm
+  config = /home/pi/bin/led.py blue addblink; mpc pause; /home/pi/bin/tda7439 sel 1; /home/pi/bin/inet_radio.py; /home/pi/bin/ssd1306_disp_mode.py inet_radio
+  mode = inet_radio
+  flags = quit
+end
+
+begin
+  prog = irexec
+  button = key_usb
+  config = /home/pi/bin/led.py blue addblink; mpc pause; killall mplayer; /home/pi/bin/tda7439 sel 4; /home/pi/bin/ssd1306_disp_mode.py usb
+  mode = usb
+  flags = quit
+end
+
+#
+# clock
+#
+begin
+  prog = irexec
+  button = key_clock
+  config = /home/pi/bin/led.py blue addblink; /home/pi/bin/ssd1306_disp_mode.py clock
+  flags = quit
+end
+
+begin
+  prog = irexec
+  button = key_timer
+  config = /home/pi/bin/led.py blue addblink; /home/pi/bin/ssd1306_disp_mode.py clock
+  flags = quit
+end
+
+#
+# single keys
+#
+# volume, base, treble
+begin
+  prog = irexec
+  button = key_volumeup
+  config = /home/pi/bin/led.py blue addblink; /home/pi/bin/volume.py up
+  flags = quit
+end
+
+begin
+  prog = irexec
+  button = key_volumedown
+  config = /home/pi/bin/led.py blue addblink; /home/pi/bin/volume.py down
+  flags = quit
+end
+
+begin
+  prog = irexec
+  button = key_folderup
+  config = /home/pi/bin/led.py blue addblink; /home/pi/bin/tda7439 base up
+  flags = quit
+end
+
+begin
+  prog = irexec
+  button = key_folderdown
+  config = /home/pi/bin/led.py blue addblink; /home/pi/bin/tda7439 base down
+  flags = quit
+end
+
+begin
+  prog = irexec
+  button = key_mute
+  config = /home/pi/bin/led.py blue addblink; /var/www/vol.sh mute; /home/pi/bin/tda7439 mute; /home/pi/bin/radio mute > /dev/null
+  flags = quit
+end
+
+#
+begin
+  prog = irexec
+  button = key_power
+  config = /home/pi/bin/led.py blue addblink; /home/pi/bin/tda7439
+  flags = quit
+end
+
+#
+#  없는 키
+#
+begin
+  prog = irexec
+  button = key_play
+  config = /home/pi/bin/led.py blue addblink; mpc -q play
+  repeat = 0
+  delay = 2
+  flags = quit
+end
+
+begin
+  prog = irexec
+  button = key_pause
+  config = /home/pi/bin/led.py blue addblink; mpc -q pause
+  flags = quit
+end
+
+#
+# 할당되지 않은 키
+#
+begin
+  prog = irexec
+  button = key_enter
+  config = /home/pi/bin/led.py yellow addblink
+  flags = quit
+end
+
+begin
+  prog = irexec
+  button = key_up
+  config = /home/pi/bin/led.py yellow addblink
+  flags = quit
+end
+
+begin
+  prog = irexec
+  button = key_back
+  config = /home/pi/bin/led.py yellow addblink
+  flags = quit
+end
+
+begin
+  prog = irexec
+  button = key_portable
+  config = /home/pi/bin/led.py yellow addblink
+  flags = quit
+end
+
+begin
+  prog = irexec
+  button = *
+  config = /home/pi/bin/led.py yellow addblink
+end
+
