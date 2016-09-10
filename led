@@ -1,0 +1,44 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          led
+# Required-Start:    $local_fs
+# Required-Stop:
+# Should-Start:
+# Default-Start:     2 3 4 5
+# Default-Stop:		 0 1 6
+# Short-Description: led on off
+# Description:       led on off
+### END INIT INFO
+
+#test -x /home/pi/bin/led.py || exit 0
+
+case "$1" in
+    start)
+		if test -x /home/pi/bin/led.py; then
+			/home/pi/bin/led.py yellow
+		fi
+		if test -x /home/pi/bin/ssd1306_mesg.py; then
+			/home/pi/bin/ssd1306_mesg.py "Booting..."
+		fi
+        ;;
+    restart|reload|force-reload)
+		if test -x /home/pi/bin/led.py; then
+			/home/pi/bin/led.py green
+		fi
+        ;;
+    stop)
+		if test -x /home/pi/bin/led.py; then
+			/home/pi/bin/led.py red
+		fi
+		if test -x /home/pi/bin/ssd1306_mesg.py; then
+			killall ssd1306_disp.py
+			/home/pi/bin/ssd1306_mesg.py "Power off..."
+		fi
+        ;;
+    *)
+        echo "Usage: $0 start|stop|restart" >&2
+        exit 3
+        ;;
+esac
+
+:
