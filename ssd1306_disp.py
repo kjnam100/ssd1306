@@ -402,7 +402,7 @@ def getWeatherCur(rtime):
 
     url = urlBase + 'ForecastGrib' + '?ServiceKey=' + apikey + \
           '&base_date=' + apiymd + '&base_time=' + apihour + apinxy_json
-    print("Cur request", apiymd, apihour, rtime.minute)
+    #print("Cur request", apiymd, apihour, rtime.minute)
 
     try:
         r = requests.get(url)
@@ -475,7 +475,7 @@ def getWeatherFore(rtime):
 
     url = urlBase + 'ForecastSpaceData' + '?ServiceKey=' + apikey + \
           '&base_date=' + apiymd + '&base_time=' + apihour + apinxy_json
-    print("Fore request", apiymd, apihour, rtime.minute)
+    #print("Fore request", apiymd, apihour, rtime.minute)
 
     try:
         r = requests.get(url)
@@ -1184,7 +1184,7 @@ def main():
             if (poller.connect() == 0):
                 if (len(mesg) > 0) and (mesg[0] != ''): 
                     sleep(1)
-                    break
+                break
             sleep(0.9)
 
     if (len(sys.argv) > 1): 
