@@ -3,9 +3,14 @@ import os, sys, signal
 import psutil
 import subprocess
 
+moode_vol_file = '/var/www/vol.sh'
+tda7439_file = '/home/pi/bin/tda7439'
 disp_mode_file = '/var/local/disp_mode'
 tda7439_info_file = '/var/local/TDA7439_saved_info'
 process_name = 'ssd1306_disp.py'
+
+Normal_Vol_l = 86
+Normal_Vol_h = 94
 
 def get_tda7439_gain():
     try:
@@ -35,40 +40,64 @@ gain = get_tda7439_gain()
 
 if (sys.argv[1] == 'up'):
     if (vol < 100):
-        #os.system('mpc volume +1 > /dev/null 2>&1')
-        os.system('/var/www/vol.sh up 1')
+        if (os.path.isfile(moode_vol_file)):
+            command = moode_vol_file + " up 1"
+            print command
+            os.system(command)
+        else:
+            os.system('mpc volume +1 > /dev/null 2>&1')
     else:
-        os.system('/home/pi/bin/tda7439 gain up > /dev/null 2>&1')
-        pid = get_pid()
-        if (pid > 0): os.kill(pid, signal.SIGUSR1)
+        if (os.path.isfile(tda7439_file)):
+            command = tda7439_file + " gain up > /dev/null 2>&1"
+            print command
+            os.system(command)
+            pid = get_pid()
+            if (pid > 0): os.kill(pid, signal.SIGUSR1)
 
 elif (sys.argv[1] == 'down'):
-    if (gain > 0):
-        os.system('/home/pi/bin/tda7439 gain down > /dev/null 2>&1')
+    if (gain > 0) and (os.path.isfile(tda7439_file)):
+        command = tda7439_file + " gain down > /dev/null 2>&1"
+        print command
+        os.system(command)
         pid = get_pid()
         if (pid > 0): os.kill(pid, signal.SIGUSR1)
     else:
-        #os.system('mpc volume -1 > /dev/null 2>&1')
-        os.system('/var/www/vol.sh dn 1')
+        if (os.path.isfile(moode_vol_file)):
+            command = moode_vol_file + " dn 1"
+            print command
+            os.system(command)
+        else:
+            os.system('mpc volume -1 > /dev/null 2>&1')
 
 elif (sys.argv[1] == 'normal-l'):
-    os.system('/var/www/vol.sh 86')
-    os.system('/home/pi/bin/tda7439 gain 0 > /dev/null 2>&1')
-    pid = get_pid()
-    if (pid > 0): os.kill(pid, signal.SIGUSR1)
+    if (os.path.isfile(moode_vol_file)):
+        command = moode_vol_file + " " + str(Normal_Vol_l)
+        print command
+        os.system(command)
+    else:
+        command = "mpc volume " + str(Normal_Vol_l) + " > /dev/null 2>&1"
+        print command
+        os.system(command)
+    if (os.path.isfile(tda7439_file)):
+        command = tda7439_file + " gain 0 > /dev/null 2>&1"
+        print command
+        os.system(command)
+        pid = get_pid()
+        if (pid > 0): os.kill(pid, signal.SIGUSR1)
 
 elif (sys.argv[1] == 'normal-h'):
-    os.system('/var/www/vol.sh 94')
-    os.system('/home/pi/bin/tda7439 gain 0 > /dev/null 2>&1')
-    pid = get_pid()
-    if (pid > 0): os.kill(pid, signal.SIGUSR1)
+    if (os.path.isfile(moode_vol_file)):
+        command = moode_vol_file + " " + str(Normal_Vol_h)
+        print command
+        os.system(command)
+    else:
+        command = "mpc volume " + str(Normal_Vol_h) + " > /dev/null 2>&1"
+        print command
+        os.system(command)
+    if (os.path.isfile(tda7439_file)):
+        command = tda7439_file + " gain 0 > /dev/null 2>&1"
+        print command
+        os.system(command)
+        pid = get_pid()
+        if (pid > 0): os.kill(pid, signal.SIGUSR1)
 
-'''
-try:
-    with open(disp_mode_file, 'r') as fd:
-        disp_mode = fd.read().splitlines()[0]
-        if (disp_mode == 'mpd'):
-            pass
-except IOError:
-    pass
-'''
