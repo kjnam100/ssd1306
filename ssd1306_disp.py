@@ -892,7 +892,7 @@ def inet_radio_disp():
     
     # Inet Radio Heart beat
     try:
-        subprocess.check_output('ps -e | grep mplayer', shell=True).splitlines()[0]
+        subprocess.check_output('ps -e | grep mplayer', shell=True) #.splitlines()[0]
         seq = (seq + 1) % 2
         draw.text((0, 0), unicode(music_note[seq]), font=font_gulim14, fill=255)
     except: pass
@@ -1232,7 +1232,25 @@ def main():
             sleep(0.9)
             continue
 
-        # else: MPD 정보 표시
+        # auto 모드는 처음 부팅하고 나서 다른 모드로 전환하기 전까지 임시로 사용.
+        if (disp_mode == 'auto'):
+            try:
+                subprocess.check_output('ps -e | grep mplayer', shell=True) #.splitlines()[0]
+                inet_radio_disp()
+                sleep(0.9)
+                continue
+            except: pass
+
+            status = poller.poll()
+            if status is None or status['state'] == 'stop':
+                clock_disp()
+                sleep(clock_sleep_time)
+                continue
+            mpd_disp()
+            continue
+
+        # else mpd 모드
+        # MPD stream 정보 표시 여부
         if (disp_mode == 'info'):
             showStreamInfo = True
         else:
