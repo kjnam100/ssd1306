@@ -41,7 +41,7 @@ if test -x /home/pi/bin/led.py; then
 	/home/pi/bin/led.py green
 fi
 if test -x /home/pi/bin/ssd1306_disp.py; then
-	/home/pi/bin/ssd1306_disp.py clock > /dev/null 2>&1 &
+	/home/pi/bin/ssd1306_disp.py auto > /dev/null 2>&1 &
 fi
 
 exit 0
