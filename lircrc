@@ -117,6 +117,13 @@ end
 begin
   prog = irexec
   button = key_display
+  button = key_up
+  config = /home/pi/bin/led.py blue addblink; /home/pi/bin/ssd1306_disp_mode.py auto
+  flags = quit
+end
+begin
+  prog = irexec
+  button = key_display
   button = key_ipod
   config = /home/pi/bin/led.py blue addblink; /home/pi/bin/ssd1306_disp_mode.py tda7439
   flags = quit
