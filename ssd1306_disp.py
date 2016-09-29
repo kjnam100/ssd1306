@@ -325,7 +325,7 @@ def get_disp_mode():
         disp_mode = 'clock'
 
     # FM station 번호 가져오기
-    if (disp_mode == "inet_radio"):
+    if (disp_mode == "inet_radio" or disp_mode == "auto"):
         try:
             with open(inet_radio_stat_file, 'r') as fd:
                 radio_station_num = int(fd.read().splitlines()[0])
@@ -761,7 +761,7 @@ def clock_disp():
 # 네트웍 상태 표시
 #
 
-init_net_mesg = "init network."
+init_net_mesg = "init network"
 
 def network_disp():
     global init_net_mesg
@@ -776,6 +776,7 @@ def network_disp():
         draw.text((0, 24), mesg[0], font=font_gulim16, fill=255)
         if (mlen > 1):
             draw.text((0, 48), mesg[1], font=font_gulim16, fill=255)
+        init_net_mesg = "init network"
     else:
         draw.text((0, 32), init_net_mesg, font=font_gulim16, fill=255)
         init_net_mesg += '.'
@@ -885,6 +886,9 @@ def volume_disp(vol):
 #---------------------------------------------------------------
 
 seq = 0
+radio_station = ""
+radio_station_num = -1
+total_radio_station_num = -1
 
 def inet_radio_disp():
     global radio_station, total_radio_station_num, radio_station_num
@@ -922,8 +926,11 @@ def inet_radio_disp():
     draw.text((128-slen[0], 32), mesg, font=font, fill=255)
 
     # 볼륨 정보
-    vol_str = subprocess.check_output("amixer get Digital | egrep -o '[0-9]+%' | awk -F % '{print $1}'", shell=True).splitlines()[0]
-    vol = int(vol_str)
+    try:
+        vol_str = subprocess.check_output("amixer get Digital | egrep -o '[0-9]+%' | awk -F % '{print $1}'", shell=True).splitlines()[0]
+        vol = int(vol_str)
+    except:
+        vol = None
 
     # Stream 정보
     try:
@@ -1181,9 +1188,9 @@ def main():
     if (poller.connect() != 0):
         while True:
             mesg = network_disp()
-            if (poller.connect() == 0):
-                if (len(mesg) > 0) and (mesg[0] != ''): 
-                    sleep(1)
+            if (len(mesg) > 0) and (mesg[0] != ''): 
+                sleep(1)
+                poller.connect()
                 break
             sleep(0.9)
 
