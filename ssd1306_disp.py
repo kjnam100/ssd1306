@@ -927,7 +927,8 @@ def inet_radio_disp():
 
     # 볼륨 정보
     try:
-        vol_str = subprocess.check_output("amixer get Digital | egrep -o '[0-9]+%' | awk -F % '{print $1}'", shell=True).splitlines()[0]
+        #vol_str = subprocess.check_output("amixer get Digital | egrep -o '[0-9]+%' | awk -F % '{print $1}'", shell=True).splitlines()[0]
+        vol_str = subprocess.check_output("mpc volume | egrep -o '[0-9]+%' | awk -F % '{print $1}'", shell=True).splitlines()[0]
         vol = int(vol_str)
     except:
         vol = None
@@ -991,7 +992,8 @@ def usb_disp():
     draw.text((0, 0), unicode("Aux 입력"), font=font_gulim14, fill=255)
 
     # 볼륨 정보
-    vol_str = subprocess.check_output("amixer get Digital | egrep -o '[0-9]+%' | awk -F % '{print $1}'", shell=True).splitlines()[0]
+    #vol_str = subprocess.check_output("amixer get Digital | egrep -o '[0-9]+%' | awk -F % '{print $1}'", shell=True).splitlines()[0]
+    vol_str = subprocess.check_output("mpc volume | egrep -o '[0-9]+%' | awk -F % '{print $1}'", shell=True).splitlines()[0]
     vol = int(vol_str)
 
     # 볼륨 표시
