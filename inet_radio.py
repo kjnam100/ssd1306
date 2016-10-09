@@ -44,7 +44,7 @@ def main():
             sn = (sn - 1) % station_num
         else:
             sn = int(sys.argv[1]) % station_num
-        print sn
+        #print sn
     
     cur_command = subprocess.check_output('ps -eo args | grep mplayer', shell=True).splitlines()[0]
     command = mpayerCommand + station[sn][0]
@@ -55,7 +55,7 @@ def main():
 
         # mplayer 실행
         #command += " > /dev/null 2>&1 &"
-        command += ">" + inet_radio_mesg_file + "&"
+        command += " 2> /dev/null " + ">" + inet_radio_mesg_file + "&"
         os.system(command)
 
     # Inet Radio display 모드
