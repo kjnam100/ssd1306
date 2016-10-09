@@ -626,12 +626,29 @@ def weather_disp(now):
     except: 
         weatherCurTime = None   # 다음번에 다시 시도하도록 함
 
+#----------------------------------------------------------------------
+
+NtpStat = None
+
+def is_ntp_work():
+    global NtpStat
+
+    try:
+        mesg = subprocess.check_output('ntpq -p', shell=True).splitlines()
+        for i in range(len(mesg)):
+            if ((mesg[i][0]) == '*'):
+                NtpStat = True
+                return
+    except: pass
+    NtpStat = False
 
 #----------------------------------------------------------------------
 
 week_str = ["月", "火", "水", "木", "金", "土", "日"]
 
 def clock_common_disp():
+    global NtpStat
+
     # 현재 시간
     localtime = time.localtime(time.time())
     month = localtime.tm_mon
@@ -656,6 +673,10 @@ def clock_common_disp():
     # 시 분 초 요일 표시
     time_hm = str('%2d' % hour) + ' : ' + str('%02d' % minute)
     time_s = str('%02d' % localtime.tm_sec)
+    if (NtpStat == None or (NtpStat == False and (localtime.tm_sec % 10) == 0) or \
+        (NtpStat and localtime.tm_sec == 0)): is_ntp_work()
+    if (not NtpStat):
+       time_s += '.'
     draw.text((hx, 48), time_hm, font=font_minecraftia14, fill=255)
     draw.text((61, 51), time_s, font=font_minecraftia12, fill=255)
 
@@ -665,6 +686,8 @@ def clock_common_disp():
 # 시간 날씨 표시
 #
 def clock_disp():
+    global NtpStat
+
     #ad = 4
     #localtime = time.localtime(time.time() + ad * (60 * 60 * 24))
     localtime = time.localtime(time.time())
@@ -729,6 +752,10 @@ def clock_disp():
     # 시 분 초 요일
     time_hm = str('%2d' % hour) + ' : ' + str('%02d' % minute)
     time_s = str('%02d' % localtime.tm_sec)
+    if (NtpStat == None or (NtpStat == False and (localtime.tm_sec % 10) == 0) or \
+        (NtpStat and localtime.tm_sec == 0)): is_ntp_work()
+    if (not NtpStat):
+       time_s += '.'
     time_w = week_str[week]
 
     # 년 월 일 주/년
