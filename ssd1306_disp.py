@@ -739,8 +739,9 @@ def clock_disp():
     firstday_week = firstday.weekday() % 7
     smw = int(ceil((next_sunday.day + firstday_week)/7.0))
 
-    if (hour > 12):
-        hour -= 12
+    if (hour >= 12):
+        if (hour > 12):
+            hour -= 12
         ampm = "pm"#'㏘'
     else:
         if (hour == 0): hour = 12
