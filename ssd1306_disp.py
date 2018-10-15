@@ -600,7 +600,7 @@ def weather_disp(now):
             weather_str = weatherPTY[weatherCur['PTY']] 
         elif ('SKY' in weatherCur.keys()): 
             weather_str = weatherSKY[weatherCur['SKY']]
-        elif ('SKYi' in weatherFore.keys()):
+        elif ('SKY' in weatherFore.keys()):
             weatherCur['SKY'] = weatherFore['SKY']
             weather_str = weatherSKY[weatherCur['SKY']]
         else:
