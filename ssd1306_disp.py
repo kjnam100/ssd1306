@@ -13,9 +13,9 @@ import time
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_SSD1306
 
-import Image
-import ImageDraw
-import ImageFont
+from PIL import Image
+from PIL import ImageDraw
+from PIL import ImageFont
 
 import datetime
 import os, sys, subprocess
@@ -598,20 +598,27 @@ def weather_disp(now):
     try:
         if ('PTY' in weatherCur.keys()) and (weatherCur['PTY'] > 0):    # 유효한 강수형태인지 체크
             weather_str = weatherPTY[weatherCur['PTY']] 
-        else:
+        elif ('SKY' in weatherCur.keys()): 
             weather_str = weatherSKY[weatherCur['SKY']]
+        elif ('SKYi' in weatherFore.keys()):
+            weatherCur['SKY'] = weatherFore['SKY']
+            weather_str = weatherSKY[weatherCur['SKY']]
+        else:
+            weatherCur['SKY'] = 0
+            weather_str = weatherSKY[weatherCur['SKY']]
+
         if ('SKY' in weatherFore.keys()) and (weatherFore['SKY'] > 0):
             if (weatherCur['SKY'] < weatherFore['SKY']):
                 weather_str += '▼' #'↓'
             elif (weatherCur['SKY'] > weatherFore['SKY']):
                 weather_str += '△' #'↑'
-        else: weatherForeTime = None    # 다음번에 다시 시도하도록 함
+        #else: weatherForeTime = None    # 다음번에 다시 시도하도록 함
         if ('LGT' in weatherCur.keys()) and (weatherCur['LGT'] > 0):    # 낙뢰
             weather_str += ' и'
         else: weather_str += ' '
         if ('WSD' in weatherCur.keys()):    # 풍속
             weather_str += " ≈" + str(int(round(weatherCur['WSD'])))    # 風
-            
+
             '''
             if (val <= 4): weather_str += " 미약"
             elif (val <= 9): weather_str += " 약강"
@@ -623,8 +630,8 @@ def weather_disp(now):
             draw.text((0, 15), unicode(weather_str), font=font_gulim11, fill=255)    # 하늘 상태
         else:
             draw.text((0, 15), unicode(weather_str), font=font_gulim12, fill=255)    # 하늘 상태
-    except: 
-        weatherCurTime = None   # 다음번에 다시 시도하도록 함
+    except:
+        pass
 
 #----------------------------------------------------------------------
 
