@@ -13,9 +13,9 @@ import time
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_SSD1306
 
-from PIL import Image
-from PIL import ImageDraw
-from PIL import ImageFont
+import Image
+import ImageDraw
+import ImageFont
 
 import datetime
 import os, sys, subprocess
