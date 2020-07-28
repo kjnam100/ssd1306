@@ -13,9 +13,9 @@ import time
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_SSD1306
 
-import Image
-import ImageDraw
-import ImageFont
+from PIL import Image
+from PIL import ImageDraw
+from PIL import ImageFont
 
 import datetime
 import os, sys, subprocess
@@ -64,9 +64,9 @@ moode_airplay_file = "/var/www/spscache.json"
 
 # 기상청 날씨 API 관련
 apikey = 'IzVFRF6gbi8IHnpNweJbBF547ybv9GAWm8e9TNSvhD%2BXQyNWZiJcBgiJe%2F2cmAEc2uKyYYq7SL3iO5obSx1Krg%3D%3D'
-apinxy_json = '&nx=62&ny=123&_type=json' # 성남 분당구 삼평동
-#apinxy_json = '&nx=61&ny=125&_type=json' # 서울 강남구 역삼1동
-#apinxy_json = '&nx=60&ny=127&_type=json' # 서울 종로구
+apinxy_json = '&nx=62&ny=123&dataType=json' # 성남 분당구 삼평동
+#apinxy_json = '&nx=61&ny=125&dataType=json' # 서울 강남구 역삼1동
+#apinxy_json = '&nx=60&ny=127&dataType=json' # 서울 종로구
 
 #---------------------------------------------------------------------
 
@@ -364,7 +364,8 @@ def sig_handler(signum, frame):
 
 #----------------------------------------------------------------------------------------
 
-urlBase = 'http://newsky2.kma.go.kr/service/SecndSrtpdFrcstInfoService2/'
+#urlBase = 'http://newsky2.kma.go.kr/service/SecndSrtpdFrcstInfoService2/'
+urlBase = 'http://apis.data.go.kr/1360000/VilageFcstInfoService/'
 
 weatherCur = {} # 현재온도, 현재습도, 현재하늘상태, 강수형태, 예상온도, 비올확률
 weatherCurTime = None
@@ -373,7 +374,7 @@ minutes_10 = datetime.timedelta(minutes=10)
 
 weatherSKY = ['', '맑음', "구름조금", "구름많음", "흐림"] # 현재하늘상태
 #weatherSKY = ['', '맑음', "흐림 약", "흐림 중", "흐림 강"] # 현재하늘상태
-weatherPTY = ['없음', "비", "비/눈", "눈"]                 # 현재강우상태
+weatherPTY = ['없음', "비", "비/눈", "눈", "소나기", "빗방울", "비/눈", "눈날림"]                 # 현재강우상태
 
 #
 # 날씨 실황 조회
@@ -384,7 +385,9 @@ def getWeatherCur(rtime):
     global weatherCur
     global timeReqCur
 
-    wtime = rtime - datetime.timedelta(minutes=rtime.minute) 
+    # 초단기실황은 매시 40분 이후에 사용가능.
+    if rtime.minute < 40: wtime = rtime - datetime.timedelta(hours=1)
+    else: wtime = rtime
 
     # 1분에 한번이상 진행 안함.
     # 현재 가용한 데이터가 없으면 진행함.
@@ -400,7 +403,7 @@ def getWeatherCur(rtime):
     apiymd = str(wtime.year) + str('%02d' % wtime.month)  + str('%02d' % wtime.day)
     apihour = str('%02d' % wtime.hour) + '00'
 
-    url = urlBase + 'ForecastGrib' + '?ServiceKey=' + apikey + \
+    url = urlBase + 'getUltraSrtNcst' + '?ServiceKey=' + apikey + \
           '&base_date=' + apiymd + '&base_time=' + apihour + apinxy_json
     #print("Cur request", apiymd, apihour, rtime.minute)
 
@@ -473,7 +476,7 @@ def getWeatherFore(rtime):
     apiymd = str(wtime.year) + str('%02d' % wtime.month)  + str('%02d' % wtime.day)
     apihour = str('%02d' % wtime.hour) + '00'
 
-    url = urlBase + 'ForecastSpaceData' + '?ServiceKey=' + apikey + \
+    url = urlBase + 'getVilageFcst' + '?ServiceKey=' + apikey + \
           '&base_date=' + apiymd + '&base_time=' + apihour + apinxy_json
     #print("Fore request", apiymd, apihour, rtime.minute)
 
@@ -534,33 +537,33 @@ def weather_disp(now):
     if (weatherForeTime and ((now - weatherForeTime).seconds // 3600 > 3)):
         old_data = True
         weatherForeTime = None
-                
+
     # 현재 날씨 
     t_str = r_str = tpm = rpm = ""
     try:
         # 온도
         if 'T3H' in weatherFore.keys():
-            if (weatherFore['T3H'] > weatherCur['T1H']):
+            if (float(weatherFore['T3H']) > float(weatherCur['T1H'])):
                 tpm = '△' #'↑'
-            elif (weatherFore['T3H'] < weatherCur['T1H']):
+            elif (float(weatherFore['T3H']) < float(weatherCur['T1H'])):
                 tpm = '▼' #'↓'
         else: weatherForeTime = None   # 다음번에 다시 시도하도록 함
-        t_str = str(int(round(weatherCur['T1H'])))             # 현재온도
+        t_str = str(int(round(float(weatherCur['T1H']))))             # 현재온도
 
         # 습도
         if 'REH' in weatherFore.keys():
-            if (weatherFore['REH'] > weatherCur['REH']):
+            if (float(weatherFore['REH']) > float(weatherCur['REH'])):
                 rpm = '△' #'↑'
-            elif (weatherFore['REH'] < weatherCur['REH']):
+            elif (float(weatherFore['REH']) < float(weatherCur['REH'])):
                 rpm = '▼' #'↓'
         else: weatherForeTime = None   # 다음번에 다시 시도하도록 함
-        r_str = str(int(round(weatherCur['REH'])))             # 현재습도
-    except: 
+        r_str = str(int(round(float(weatherCur['REH']))))             # 현재습도
+    except:
         weatherCurTime = None  # 다음번에 다시 시도하도록 함
 
-    # 돈도 습도 나타내기
+    # 온도 습도 나타내기
     slen = draw.textsize(unicode(t_str + '℃ ' + r_str + '%'), font=font_gulim15)
-    if (slen[0] > 77): 
+    if (slen[0] > 77):
         font = font_gulim13
     else: font = font_gulim15
     px = width - 10
@@ -568,7 +571,7 @@ def weather_disp(now):
     slen = draw.textsize(unicode(r_str), font=font)
     px -= slen[0] + 1
     draw.text((px, 0), unicode(r_str), font=font, fill=255)
-    px -= 10 
+    px -= 10
     if (rpm == '△'): py = 4
     else: py = 1
     draw.text((px, py), unicode(rpm), font=font_gulim11, fill=255)
@@ -578,46 +581,46 @@ def weather_disp(now):
     slen = draw.textsize(unicode(t_str), font=font)
     px -= slen[0]
     draw.text((px, 0), unicode(t_str), font=font, fill=255)
-    px -= 10 
+    px -= 10
     if (tpm == '△'): py = 4
     else: py = 1
     draw.text((px, py), unicode(tpm), font=font_gulim11, fill=255)
 
     # 예보 날씨 (강수확률)
     try:
-        weather_str = str(int(round(weatherFore['POP']))) + '%' 
+        weather_str = str(int(round(float(weatherFore['POP'])))) + '%'
         if (old_data): weather_str = '≠' + weather_str # ≠
-    except: 
+    except:
         if 'resultCode' in weatherFore.keys():
-            weather_str += "E: " + str(weatherFore['resultCode'])
+            weather_str = "E: " + str(weatherFore['resultCode'])
         else: weather_str = "오류"
         weatherForeTime = None   # 다음번에 다시 시도하도록 함
     draw.text((0, 0), unicode(weather_str), font=font_gulim15, fill=255)
 
     # 하늘 상태 또는 강수형태
     try:
-        if ('PTY' in weatherCur.keys()) and (weatherCur['PTY'] > 0):    # 유효한 강수형태인지 체크
-            weather_str = weatherPTY[weatherCur['PTY']] 
-        elif ('SKY' in weatherCur.keys()): 
-            weather_str = weatherSKY[weatherCur['SKY']]
+        if ('PTY' in weatherCur.keys()) and (int(weatherCur['PTY']) > 0):    # 유효한 강수형태인지 체크
+            weather_str = weatherPTY[int(weatherCur['PTY'])]
+        elif ('SKY' in weatherCur.keys()):
+            weather_str = weatherSKY[int(weatherCur['SKY'])]
         elif ('SKY' in weatherFore.keys()):
             weatherCur['SKY'] = weatherFore['SKY']
-            weather_str = weatherSKY[weatherCur['SKY']]
+            weather_str = weatherSKY[int(weatherCur['SKY'])]
         else:
             weatherCur['SKY'] = 0
             weather_str = weatherSKY[weatherCur['SKY']]
 
-        if ('SKY' in weatherFore.keys()) and (weatherFore['SKY'] > 0):
-            if (weatherCur['SKY'] < weatherFore['SKY']):
+        if ('SKY' in weatherFore.keys()) and ('SKY' in weatherCur.keys()) and (int(weatherFore['SKY']) > 0):
+            if (int(weatherCur['SKY']) < int(weatherFore['SKY'])):
                 weather_str += '▼' #'↓'
-            elif (weatherCur['SKY'] > weatherFore['SKY']):
+            elif (int(weatherCur['SKY']) > int(weatherFore['SKY'])):
                 weather_str += '△' #'↑'
         #else: weatherForeTime = None    # 다음번에 다시 시도하도록 함
-        if ('LGT' in weatherCur.keys()) and (weatherCur['LGT'] > 0):    # 낙뢰
+        if ('LGT' in weatherCur.keys()) and (int(weatherCur['LGT']) > 0):    # 낙뢰
             weather_str += ' и'
         else: weather_str += ' '
         if ('WSD' in weatherCur.keys()):    # 풍속
-            weather_str += " ≈" + str(int(round(weatherCur['WSD'])))    # 風
+            weather_str += " ≈" + str(int(round(float(weatherCur['WSD']))))    # 風
 
             '''
             if (val <= 4): weather_str += " 미약"
@@ -630,6 +633,7 @@ def weather_disp(now):
             draw.text((0, 15), unicode(weather_str), font=font_gulim11, fill=255)    # 하늘 상태
         else:
             draw.text((0, 15), unicode(weather_str), font=font_gulim12, fill=255)    # 하늘 상태
+
     except:
         pass
 
@@ -638,7 +642,7 @@ def weather_disp(now):
 NtpStat = None
 
 def is_ntp_work():
-    global NtpStat
+
 
     try:
         mesg = subprocess.check_output('ntpq -p', shell=True).splitlines()
@@ -646,7 +650,12 @@ def is_ntp_work():
             if ((mesg[i][0]) == '*'):
                 NtpStat = True
                 return
-    except: pass
+    except:
+        try:
+            subprocess.check_output('timedatectl | grep -i "synchronized: yes"', shell=True)
+            NtpStat = True
+            return
+        except: pass
     NtpStat = False
 
 #----------------------------------------------------------------------
